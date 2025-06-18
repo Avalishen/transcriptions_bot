@@ -51,7 +51,7 @@ async def handle_voice(message: Message, state: FSMContext):
     file_path = file.file_path
     downloaded_file = await message.bot.download_file(file_path)
 
-    # Сохраняем временный файл
+    # Сохранение временного файла
     await message.answer("💾 LOG: Сохраняем временный файл...")
 
     temp_file = "temp_voice.mp3"
@@ -67,14 +67,14 @@ async def handle_voice(message: Message, state: FSMContext):
     # Запуск таймера
     start_time = time.time()
 
-    # Показываем реальное время выполнения
+    # Показать время выполнения
     while True:
         elapsed_time = int(time.time() - start_time)
         await progress_message.edit_text(f"⏳ Обработка... {elapsed_time} сек.")
         time.sleep(1)  # Обновляем каждую секунду
 
-        # Проверяем, завершилась ли обработка
-        if elapsed_time > 1:  # Пример: эмуляция завершения
+        # Проверка завершилась ли обработка
+        if elapsed_time > 1:
             break
 
 
@@ -88,7 +88,7 @@ async def handle_voice(message: Message, state: FSMContext):
     os.remove(temp_file)
     os.remove(wav_file)
 
-    # Редактируем сообщение с результатом
+    # Редактировать сообщение с результатом
     total_time = int(time.time() - start_time)
     if text.strip():
         await progress_message.edit_text(
@@ -98,7 +98,7 @@ async def handle_voice(message: Message, state: FSMContext):
         await progress_message.edit_text(
             f"❌ Не удалось распознать текст.\n\n⏱️ Затраченное время: {total_time} сек."
         )
-    # Сбрасываем состояние
+    # Сброс состояния
     await state.clear()
 
 
@@ -120,7 +120,7 @@ async def handle_audio(message: Message, state: FSMContext):
     file_path = file.file_path
     downloaded_file = await message.bot.download_file(file_path)
 
-    # Сохраняем временный файл
+    # Сохранение временного файла
     await message.answer("💾 LOG: Сохраняем временный файл...")
     temp_file = "temp_audio.mp3"
     with open(temp_file, "wb") as f:
@@ -135,14 +135,14 @@ async def handle_audio(message: Message, state: FSMContext):
     # Запуск таймера
     start_time = time.time()
 
-    # Показываем реальное время выполнения
+    # Показывать время выполнения
     while True:
         elapsed_time = int(time.time() - start_time)
         await progress_message.edit_text(f"⏳ Обработка... {elapsed_time} сек.")
-        time.sleep(1)  # Обновляем каждую секунду
+        time.sleep(1)  # Обновлять каждую секунду
 
-        # Проверяем, завершилась ли обработка
-        if elapsed_time > 1:  # Пример: эмуляция завершения
+        # Проверка завершилась ли обработка
+        if elapsed_time > 1:
             break
 
     # Распознавание текста
@@ -155,7 +155,7 @@ async def handle_audio(message: Message, state: FSMContext):
     os.remove(temp_file)
     os.remove(wav_file)
 
-    # Редактируем сообщение с результатом
+    # Редактирование сообщения с результатом
     total_time = int(time.time() - start_time)
     if text.strip():
         await progress_message.edit_text(
@@ -165,7 +165,7 @@ async def handle_audio(message: Message, state: FSMContext):
         await progress_message.edit_text(
             f"❌ Не удалось распознать текст.\n\n⏱️ Затраченное время: {total_time} сек."
         )
-    # Сбрасываем состояние
+    # Сброс состояния
     await state.clear()
 
 
@@ -180,7 +180,7 @@ async def handled_video(message: Message, state: FSMContext):
 
     progress_message = await message.answer("⏳ Начинаю обработку видео...")
 
-    # Скачиваем видеофайл
+    # Скачивание видеофайла
     file_id = message.video.file_id
     file = await message.bot.get_file(file_id)
     file_path = file.file_path
@@ -192,13 +192,13 @@ async def handled_video(message: Message, state: FSMContext):
     with open(temp_video, "wb") as f:
         f.write(downloaded_file.read())
 
-    # Извлекаем аудиодорожку из видео
+    # Извлеченире аудиодорожки из видео
     audio_file = "temp_audio.mp3"
     try:
-        video_clip = mp.VideoFileClip(temp_video)  # Открываем видео
-        video_clip.audio.write_audiofile(audio_file)  # Извлекаем аудио
+        video_clip = mp.VideoFileClip(temp_video)
+        video_clip.audio.write_audiofile(audio_file)
     finally:
-        video_clip.close()  # Явно закрываем объект VideoFileClip
+        video_clip.close()
 
     # Конвертация аудио в WAV
     await message.answer("🔄 LOG: Конвертация файла...")
@@ -209,14 +209,14 @@ async def handled_video(message: Message, state: FSMContext):
     # Запуск таймера
     start_time = time.time()
 
-    # Показываем реальное время выполнения
+    # Показать время выполнения
     while True:
         elapsed_time = int(time.time() - start_time)
         await progress_message.edit_text(f"⏳ Обработка... {elapsed_time} сек.")
         time.sleep(1)  # Обновляем каждую секунду
 
-        # Проверяем, завершилась ли обработка
-        if elapsed_time > 1:  # Пример: эмуляция завершения
+        # Проверка завершилась ли обработка
+        if elapsed_time > 1:
             break
 
     # Распознавание текста
@@ -230,7 +230,7 @@ async def handled_video(message: Message, state: FSMContext):
     os.remove(audio_file)
     os.remove(wav_file)
 
-    # Редактируем сообщение с результатом
+    # Редактирование сообщения с результатом
     total_time = int(time.time() - start_time)
     if text.strip():
         await progress_message.edit_text(
@@ -240,7 +240,7 @@ async def handled_video(message: Message, state: FSMContext):
         await progress_message.edit_text(
             f"❌ Не удалось распознать текст.\n\n⏱️ Затраченное время: {total_time} сек."
         )
-    # Сбрасываем состояние
+    # Сброс состояния
     await state.clear()
 
 
