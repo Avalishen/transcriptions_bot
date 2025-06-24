@@ -34,7 +34,7 @@ async def list_command(message: Message):
                          f"🎤 /voice - Команда для извлечения текста из голосового сообщения!\n"
                          f"🎶 /audio - Команда для извлечения текста из музыки!\n"
                          f"🎬 /video - Команда для извлечения аудиодорожки из видео!\n"
-                         f"🎥 /video_message - Команда для извлечения аудиодорожки из кружков Telegram!")
+                         f"🎥 /notes - Команда для извлечения аудиодорожки из кружков Telegram!")
 
 
 @dp.message(Command("voice"))
@@ -292,7 +292,7 @@ async def handled_video(message: Message, state: FSMContext):
         os.remove(audio_file)
         os.remove(wav_file)
 
-        # Редактируем сообщение с результатом
+        # Редактирование сообщения с результатом
         total_time = int(time.time() - start_time)
         if text.strip():
             await progress_message.edit_text(
@@ -305,7 +305,7 @@ async def handled_video(message: Message, state: FSMContext):
         await progress_message.edit_text(f"❌ Произошла ошибка: {str(e)}")
 
     finally:
-        # Убедимся, что временные файлы удалены
+        # Проверка, что временные файлы удалены
         if os.path.exists("temp_video.mp4"):
             os.remove("temp_video.mp4")
         if os.path.exists("temp_audio.mp3"):
@@ -336,7 +336,7 @@ def extract_audio(input_file, output_file):
         raise RuntimeError("Не удалось извлечь аудио из видео.")
 
 
-@dp.message(Command("video_message"))
+@dp.message(Command("notes"))
 async def video_message_command(message: Message, state: FSMContext):
     await message.answer("🎥 Пожалуйста, отправьте кружок (видеозаметку).")
     await state.set_state("waiting_for_video_message")
@@ -395,17 +395,20 @@ async def handled_video_message(message: Message, state: FSMContext):
         # Запуск таймера
         start_time = time.time()
 
-        # Распознаем текст с помощью Whisper
+        # Распознавание текста с помощью Whisper
         log_recognition = await message.answer("🔍 LOG: Распознавание текста...")
         log_message.append(log_recognition.message_id)
         result = model.transcribe(wav_file)
         text = result["text"]
 
         # Удаление временных файлов
-        log_deletion = await message.answer("🗑️ LOG: Удаление временных файлов...")
-        log_message.append(log_deletion.message_id)
+        log_deleting_files = await message.answer("🗑️ LOG: Удаление временных файлов...")
+        log_message.append(log_deleting_files.message_id)
+        os.remove(temp_video)
+        os.remove(audio_file)
+        os.remove(wav_file)
 
-        # Редактируем сообщение с результатом
+        # Редактирование сообщения с результатом
         total_time = int(time.time() - start_time)
         if text.strip():
             await progress_message.edit_text(
@@ -421,19 +424,19 @@ async def handled_video_message(message: Message, state: FSMContext):
         await progress_message.edit_text(f"❌ Произошла ошибка: {str(e)}")
 
     finally:
-        # Убедимся, что временные файлы удалены
+        # Проверка, что временные файлы удалены
         for file in [temp_video, audio_file, wav_file]:
             if os.path.exists(file):
                 os.remove(file)
 
-        # Удаляем лог-сообщения
+        # Удаление лога-сообщений
         for msg_id in log_message:
             try:
                 await message.bot.delete_message(chat_id=message.chat.id, message_id=msg_id)
             except Exception:
                 pass
 
-    # Сбрасываем состояние
+    # Сброс состояния
     await state.clear()
 
 
