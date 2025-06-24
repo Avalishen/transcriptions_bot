@@ -8,3 +8,6 @@ class AudioState(StatesGroup):
 
 class VideoState(StatesGroup):
     waiting_for_video = State()
+
+class VideoMessageState(StatesGroup):
+    waiting_for_video_message = State()
